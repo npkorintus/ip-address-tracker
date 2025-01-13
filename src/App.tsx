@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import SimpleMap from './components/SimpleMap';
 import './App.css';
 
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -20,6 +21,8 @@ function App() {
   }
   type SearchParam = 'ipAddress' | 'domain' | 'invalid' | 'none';
 
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
   const [input, setInput] = useState<string>('');
   const [searchParam, setSearchParam] = useState<SearchParam>('none');
   const [query, setQuery] = useState<string>('');
@@ -41,18 +44,38 @@ function App() {
     fetch(`${baseUrl}apiKey=${API_KEY}`)
       .then(response => response.json())
       .then(data => setResult(data))
-      .catch(error => console.error(error));
+      .catch(error => {
+        console.error(error);
+        setError(error);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
+    setLoading(true);
+
     if (searchParam === 'ipAddress' || searchParam === 'domain') {
       fetch(`${baseUrl}apiKey=${API_KEY}&${searchParam}=${query}`)
-        .then(response => response.json())
+        .then(response => {
+          console.log(response);
+          if (response.ok) {
+            return response.json()
+          } else {
+            setError('Error fetching data');
+            throw Error('Error fetching data');
+
+          }
+        })
         .then(data => setResult(data))
-        .catch(error => console.error(error));
+        .catch(error => {
+          console.error(error);
+          setError(error);
+        })
+        .finally(() => setLoading(false));
     } else if (searchParam === 'invalid') {
       alert("Invalid IP address or domain name");
     }
+
   }, [searchParam, query]);
 
   console.log(result);
@@ -94,6 +117,8 @@ function App() {
     return 'invalid'; // If neither match
   }
   
+  if (loading) return <div style={{ color: 'white', backgroundColor: 'black' }}>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <>
@@ -102,24 +127,29 @@ function App() {
         <input required type='text' placeholder='Search for any IP address or domain' value={input} onChange={handleChange} />
         <input type='submit' value='>' />
       </form>
-      <div className='result'>
-        <div>
-          <small>IP ADDRESS: </small>
-          <b>{result.ip}</b>
+
+      {!loading && <>
+        <div className='result'>
+          <div>
+            <small>IP ADDRESS: </small>
+            <b>{result.ip}</b>
+          </div>
+          <div>
+            <small>LOCATION: </small>
+            <b>{result.location.city} {result.location.postalCode}</b>
+          </div>
+          <div>
+            <small>TIMEZONE: </small>
+            <b>UTC{result.location.timezone}</b>
+          </div>
+          <div>
+            <small>ISP: </small>
+            <b>{result.isp || '-'}</b>
+          </div>
         </div>
-        <div>
-          <small>LOCATION: </small>
-          <b>{result.location.city} {result.location.postalCode}</b>
-        </div>
-        <div>
-          <small>TIMEZONE: </small>
-          <b>UTC{result.location.timezone}</b>
-        </div>
-        <div>
-          <small>ISP: </small>
-          <b>{result.isp}</b>
-        </div>
-      </div>
+
+        <SimpleMap lat={result.location.lat} lng={result.location.lng} />
+      </>}
     </>
   )
 }
