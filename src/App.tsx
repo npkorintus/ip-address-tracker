@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import SimpleMap from './components/SimpleMap';
 import './App.css';
 
+import arrowIcon from './assets/icon-arrow.svg';
+
 const API_KEY = import.meta.env.VITE_API_KEY;
 const baseUrl = 'https://geo.ipify.org/api/v2/country,city?';
 
@@ -37,7 +39,7 @@ function App() {
       postalCode: '',
       timezone: '',
     },
-    isp: '', 
+    isp: '',
   });
 
   useEffect(() => {
@@ -89,62 +91,67 @@ function App() {
     e.preventDefault();
     // console.log(input);
     // console.log(isIpOrDomain(input));
-    
+
     // Remove http:// or https:// from the beginning of the string if present
     const str = input.replace(/^https?:\/\//, '');
 
     setSearchParam(isIpOrDomain(str));
     setQuery(str);
   }
-  
+
   function isIpOrDomain(str: string) {
     // Regular expression to check if the string is an IPv4 address
     const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-  
+
     // Regular expression to check if the string is a valid domain name
     const domainPattern = /^(?!:\/\/)([a-zA-Z0-9-_]+\.)+[a-zA-Z]{2,}$/;
-  
+
     // Check if the string matches IPv4 pattern
     if (ipv4Pattern.test(str)) {
       return 'ipAddress';
     }
-  
+
     // Check if the string matches domain name pattern
     if (domainPattern.test(str)) {
       return 'domain';
     }
-  
+
     return 'invalid'; // If neither match
   }
-  
+
   if (loading) return <div style={{ color: 'white', backgroundColor: 'black' }}>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
     <>
-      <h1>IP Address Tracker</h1>
-      <form onSubmit={handleSubmit}>
-        <input required type='text' placeholder='Search for any IP address or domain' value={input} onChange={handleChange} />
-        <input type='submit' value='>' />
+    <div className='container'>
+      <h1 className='rubik-medium'>IP Address Tracker</h1>
+      <form className='form' onSubmit={handleSubmit}>
+        <input className='input' required type='text' placeholder='Search for any IP address or domain' value={input} onChange={handleChange} />
+        <button className='submit' type='submit'><img src={arrowIcon} /></button>
       </form>
+    </div>
 
       {!loading && <>
         <div className='result'>
-          <div>
-            <small>IP ADDRESS: </small>
-            <b>{result.ip}</b>
+          <div className='result-item'>
+            <small className='label'>IP ADDRESS</small>
+            <p>{result.ip}</p>
           </div>
-          <div>
-            <small>LOCATION: </small>
-            <b>{result.location.city} {result.location.postalCode}</b>
+          <div className='divider'></div>
+          <div className='result-item'>
+            <small className='label'>LOCATION</small>
+            <p>{result.location.city} {result.location.postalCode}</p>
           </div>
-          <div>
-            <small>TIMEZONE: </small>
-            <b>UTC{result.location.timezone}</b>
+          <div className='divider'></div>
+          <div className='result-item'>
+            <small className='label'>TIMEZONE</small>
+            <p>UTC{result.location.timezone}</p>
           </div>
-          <div>
-            <small>ISP: </small>
-            <b>{result.isp || '-'}</b>
+          <div className='divider'></div>
+          <div className='result-item'>
+            <small className='label'>ISP</small>
+            <p>{result.isp || '-'}</p>
           </div>
         </div>
 
