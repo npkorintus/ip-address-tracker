@@ -1,0 +1,21 @@
+{
+  "ip": "71.175.211.173",
+  "location": {
+      "country": "US",
+      "region": "Pennsylvania",
+      "city": "Concordville",
+      "lat": 39.88511,
+      "lng": -75.5202,
+      "postalCode": "19331",
+      "timezone": "-05:00",
+      "geonameId": 4557310
+  },
+  "as": {
+      "asn": 701,
+      "name": "UUNET",
+      "route": "71.175.0.0\/16",
+      "domain": "https:\/\/www.verizon.com\/business\/",
+      "type": "NSP"
+  },
+  "isp": "Verizon"
+}

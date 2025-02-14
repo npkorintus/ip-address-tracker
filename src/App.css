@@ -12,19 +12,20 @@ h1 {
 .form {
     height: 50px;
     display: flex;
-    margin: 0 auto;
+    margin: 20px auto;
     max-width: 450px;
 }
 
 .input {
     border: none;
-    border-top-left-radius: 16px;
-    border-bottom-left-radius: 16px;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
     height: 100%;
     width: 400px;
     margin: 0;
     padding: 0 0 0 20px;
     font-size: 18px;
+    text-overflow: ellipsis;
 }
 
 .input:hover, .submit:hover {
@@ -35,15 +36,16 @@ h1 {
 .input:focus {
     /* border: 1px solid pink; */
     outline: none;
+    cursor: text;
 }
 
 .submit {
     background: black;
-    border-bottom-right-radius: 16px;
-    border-top-right-radius: 16px;
+    border-bottom-right-radius: 12px;
+    border-top-right-radius: 12px;
     border: none;
     height: 100%;
-    width: 50px;
+    width: 100px;
     margin: 0;
     padding: 0;
 }
@@ -52,20 +54,29 @@ h1 {
     background: var(--very-dark-gray);
 }
 
+.input-error {
+    color: red;
+    /* font-size: 12px; */
+    margin: 4px;
+    padding: 0;
+    font-weight: 700;
+}
+
 .result {
     display: block;
     /* width: 600px; */
-    /* margin: 0 auto; */
-    position: absolute;
+    margin: 0 auto;
+    position: relative;
     left: 0;
     right: 0;
-    margin-inline: auto;
-    width: fit-content;
+    /* margin-inline: auto; */
+    /* width: fit-content; */
     z-index: 999;
     background: white;
-    padding: 40px;
+    padding: 20px;
     border-radius: 16px;
-    transform: translateY(-50%);
+    /* transform: translateY(-50%); */
+    max-width: 800px;
 }
 
 .result-item {
@@ -82,6 +93,7 @@ h1 {
     color: var(--dark-gray);
     font-weight: 500;
     font-size: 12px;
+    letter-spacing: 1px;
 }
 
 .divider {
@@ -98,7 +110,21 @@ h1 {
 }
 
 @media (min-width: 768px) {
+    .form {
+        margin: 40px auto 50px;
+    }
+    
+    .submit {
+        width: 50px;
+    }
+    
     .result {
         display: flex;
+    }
+}
+
+@media (min-width: 1024px) {
+    .form {
+        margin: 40px auto 60px;
     }
 }

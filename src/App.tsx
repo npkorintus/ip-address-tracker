@@ -4,8 +4,10 @@ import './App.css';
 
 import arrowIcon from './assets/icon-arrow.svg';
 
-const API_KEY = import.meta.env.VITE_API_KEY;
-const baseUrl = 'https://geo.ipify.org/api/v2/country,city?';
+// const API_KEY = import.meta.env.VITE_API_KEY;
+// const API_KEY = '';
+// const baseUrl = 'https://geo.ipify.org/api/v2/country,city?';
+// const baseUrl = 'https://api.ipgeolocation.io/ipgeo';
 
 function App() {
   type Result = {
@@ -21,11 +23,13 @@ function App() {
     };
     isp: string;
   }
+
   type SearchParam = 'ipAddress' | 'domain' | 'invalid' | 'none';
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
   const [input, setInput] = useState<string>('');
+  const [inputError, setInputError] = useState<string>('');
   const [searchParam, setSearchParam] = useState<SearchParam>('none');
   const [query, setQuery] = useState<string>('');
   const [result, setResult] = useState<Result>({
@@ -43,8 +47,17 @@ function App() {
   });
 
   useEffect(() => {
-    fetch(`${baseUrl}apiKey=${API_KEY}`)
-      .then(response => response.json())
+    // fetch(`${baseUrl}apiKey=${API_KEY}`)
+    fetch('data.json')
+      .then(response => {
+        if (response.ok)
+          return response.json();
+        else {
+          console.log(response.json());
+          setError(`Error fetching data: ${response.statusText}`);
+          // throw Error('Error fetching data');
+        }
+      })
       .then(data => setResult(data))
       .catch(error => {
         console.error(error);
@@ -54,10 +67,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
-
+    console.log(searchParam)
     if (searchParam === 'ipAddress' || searchParam === 'domain') {
-      fetch(`${baseUrl}apiKey=${API_KEY}&${searchParam}=${query}`)
+      //fetch(`${baseUrl}apiKey=${API_KEY}&${searchParam}=${query}`)
+      fetch('data.json')
         .then(response => {
           console.log(response);
           if (response.ok) {
@@ -75,7 +88,8 @@ function App() {
         })
         .finally(() => setLoading(false));
     } else if (searchParam === 'invalid') {
-      alert("Invalid IP address or domain name");
+      // alert("Invalid IP address or domain name");
+      setInputError('Invalid IP address or domain name');
     }
 
   }, [searchParam, query]);
@@ -85,6 +99,7 @@ function App() {
   const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
     e.preventDefault();
     setInput((e.target as HTMLInputElement).value);
+    setInputError('');
   }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -130,7 +145,7 @@ function App() {
         <input className='input' required type='text' placeholder='Search for any IP address or domain' value={input} onChange={handleChange} />
         <button className='submit' type='submit'><img src={arrowIcon} /></button>
       </form>
-    </div>
+      {inputError && <p className='input-error'>{inputError}</p>}
 
       {!loading && <>
         <div className='result'>
@@ -155,8 +170,11 @@ function App() {
           </div>
         </div>
 
-        <SimpleMap lat={result.location.lat} lng={result.location.lng} />
       </>}
+    
+    </div>
+    
+    <SimpleMap lat={result.location.lat} lng={result.location.lng} />
     </>
   )
 }
